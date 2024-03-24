@@ -1,36 +1,115 @@
 <?php
 
-use http\Exception\InvalidArgumentException as InvalidArgumentExceptionAlias;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use App\Http\Controllers\SSOController;
+
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Str;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get("login", function (Request $request){
-    $request->session()->put("state",$state=Str::random(40));
-    $query = http_build_query([
-        "client_id" =>"9b9ffe0f-6e0d-4264-96c6-5846ea9fd979",
-        "redirect_uri" =>"http://127.0.0.1:8080/callback",
-        "response_type"=>"code",
-        "scope"=>"",
-        "state"=>$state
-    ]);
-    return redirect("http://127.0.0.1:8000/oauth/authorize?".$query);
+Route::get("/sso/login", [SSOController::class,"login"])->name("sso.login");
+
+Route::get("/callback", [SSOController::class,"callback"])->name("sso.callback");
+
+Route::get('/', function () {
+    return view('view_blades.welcome');
+})->name('guest.welcome');
+
+
+Route::get('/about_us', function () {
+    return view('view_blades.about_us');
+})->name('guest.about');
+
+
+Route::get('/animals', function () {
+    return view('view_blades.animals');
+})->name('guest.animals');
+
+Route::get('/shelters', function () {
+    return view('view_blades.shelters');
+})->name('guest.shelters');
+
+Auth::routes([
+    'verify' => true,
+    'reset' => false,
+    'register' => false,
+]);
+
+Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])
+    ->name('password.request');
+
+Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])
+    ->name('password.reset');
+
+Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])
+    ->name('password.email');
+
+Route::post('password/reset', [ResetPasswordController::class, 'reset'])
+    ->name('password.update');
+
+
+Route::get('/register', [RegisterController::class, 'showRegistrationForm'])
+    ->middleware(HasInvitation::class)
+    ->name('registerShow');
+
+Route::post('/register', [RegisterController::class, 'create'])
+    ->name('registerCreate');
+
+
+Route::prefix('/super_admin_dashboard')
+    ->middleware(['auth', 'verified','role:3'])
+    ->group(function () {
+
+        Route::get('/', function (){
+            return view('super_admin_views.invitations');
+        })->name('super_admin_dashboard');
+
+        Route::get('/invitation', function () {
+            return view('super_admin_views.invitations');
+        })->name('invitations');
+
+        Route::get('/shelters', function () {
+            return view('super_admin_views.shelters');
+        })->name('shelters');
+
+        Route::get('/animals', function () {
+            return view('super_admin_views.animals');
+        })->name('animals');
+
+        Route::prefix('/general')->group(function () {
+
+            Route::get('/categories', function () {
+                return view('super_admin_views.general.categories');
+            })->name('general.categories');
+
+            Route::get('/county', function () {
+                return view('super_admin_views.general.counties');
+            })->name('general.counties');
+
+            Route::get('/settlement', function () {
+                return view('super_admin_views.general.settlement');
+            })->name('general.settlement');
+
+            Route::get('/size', function () {
+                return view('super_admin_views.general.size');
+            })->name('general.size');
+
+            Route::get('/species', function () {
+                return view('super_admin_views.general.species');
+            })->name('general.species');
+
+            Route::get('/colors', function () {
+                return view('super_admin_views.general.colors');
+            })->name('general.colors');
+        });
+    });
+
+Route::prefix('/admin_dashboard')->middleware(['auth','verified','role:2'])->group(function (){
+    Route::get('/', function (){
+        return view('admin_views.welcome');
+    })->name('statistics');
 });
 
-Route::get("/callback", function (Request $request){
-   $state = $request->session()->pull("state");
-   throw_unless(strlen($state) >0 && $state = $request->state, InvalidArgumentExceptionAlias::class);
-   $response = Http::asForm()->post("http://127.0.0.1:8000/oauth/token",[
-       "grant_type"=>"authorization_code",
-       "client_id"=>"9b9ffe0f-6e0d-4264-96c6-5846ea9fd979",
-       "client_secret" =>"R0L2TR2atAPQfZn58rxhKzeVxHNie0ourTaXlxOS",
-       "redirect_uri"=>"http://127.0.0.1:8080/callback",
-       "code" => $request->code
-   ]);
-   return $response->json();
-});
+
+Route::get('/ip',[\App\Http\Controllers\TestControllers\GeoLocationController::class,'index']);

@@ -1,2 +1,2 @@
 <h1>SSO Client</h1>
-<a href="/login">Login with SSO</a>
+<a href="{{route("sso.login")}}">Login with SSO</a>

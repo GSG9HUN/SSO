@@ -1,0 +1,204 @@
+@import url(https://fonts.googleapis.com/css?family=Lato:100,300,400);
+@import url(https://fonts.googleapis.com/css?family=Roboto:100);
+.ReactModal__Overlay--after-open {
+  z-index: 1;
+  background-color: rgba(80, 92, 122, 0.75) !important;
+}
+
+.Modal {
+  background: linear-gradient(to right, #243342, #362d53);
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  position: absolute;
+  inset: 50% auto auto 50%;
+  border: 1px solid #cccccc;
+  overflow: auto;
+  border-radius: 4px;
+  outline: none;
+  padding: 20px;
+  color: #d9e1f2;
+}
+.Modal h2 {
+  text-align: center;
+  font-size: xx-large;
+}
+.Modal label {
+  text-align: center;
+  font-size: medium;
+  margin-bottom: 15px;
+}
+.Modal input {
+  width: 200px;
+  margin: auto;
+  height: 30px;
+  font-size: larger;
+}
+.Modal button {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 100rem;
+  margin: 15px 5px 0 5px;
+  color: inherit;
+  background: transparent;
+  font-size: larger;
+  padding: 1em 1em 1em 1em;
+  font-family: inherit;
+  letter-spacing: 0.2rem;
+  transition: 0.2s;
+  cursor: pointer;
+}
+.Modal button::-moz-focus-inner {
+  border: 0;
+}
+.Modal button:hover,
+.Modal button:focus {
+  background: #0d80f2;
+  border-color: #0d80f2;
+  transform: translateY(-0.2rem);
+}
+
+.small {
+  width: 300px;
+  height: auto;
+}
+
+.form-item {
+  display: flex;
+  flex-direction: column;
+  margin: 5px;
+}
+
+.form-buttons {
+  float: right;
+}
+
+.validation-error {
+  margin-bottom: 5%;
+  font-size: medium;
+}
+.validation-error p {
+  color: #761b18;
+}
+
+.button-img {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.button-img .edit {
+  background: transparent;
+  padding: 0;
+  margin-right: 5px;
+}
+.button-img .edit button {
+  width: 35px;
+  height: 35px;
+  background: url("/images/SuperAdminImages/edit.png") top left no-repeat;
+  background-size: 35px;
+  cursor: pointer;
+  border: none;
+  text-indent: -9999em;
+}
+.button-img .edit button:hover,
+.button-img .edit button:focus {
+  box-shadow: 0 0.5em 0.5em -0.4em #ffa260;
+  transform: translateY(-0.4em);
+}
+.button-img .delete {
+  background: transparent;
+  margin-left: 5px;
+}
+.button-img .delete button {
+  width: 35px;
+  height: 35px;
+  background: url("/images/SuperAdminImages/delete.png") top left no-repeat;
+  background-size: 35px;
+  cursor: pointer;
+  border: none;
+  text-indent: -9999em;
+}
+.button-img .delete button:hover,
+.button-img .delete button:focus {
+  box-shadow: 0 0.5em 0.5em -0.4em #ffa260;
+  transform: translateY(-0.4em);
+}
+
+.table-container {
+  width: 100%;
+  color: #d5e6e7;
+}
+.table-container thead {
+  background: #212832;
+  color: #fee9cf;
+  height: 50px;
+}
+.table-container thead th {
+  font-size: 20px;
+  text-align: center;
+}
+.table-container table {
+  width: 100%;
+  background: #2d3945;
+}
+.table-container table td {
+  text-align: center;
+  padding-top: 2%;
+}
+.table-container table tr:nth-child(2n) {
+  background: #242f38;
+  padding-top: 50%;
+}
+.table-container .pagination-container {
+  display: flex;
+  width: 100%;
+  margin-top: 5%;
+  margin-left: auto;
+  margin-right: auto;
+  align-items: center;
+}
+.table-container .pagination-container ul {
+  margin: 0;
+}
+.table-container .pagination-container ul li {
+  margin: 0 5px 0 5px;
+}
+.table-container .pagination-container .pagination {
+  margin: auto;
+}
+.table-container .row-buttons {
+  float: right;
+  margin-top: 15px;
+  font-family: "Lato", sans-serif;
+  transition: 0.5s;
+  border-radius: 8px;
+}
+.table-container .row-buttons .animated-button:hover, .table-container .row-buttons .animated-button:focus {
+  -webkit-animation: pulse 1s;
+          animation: pulse 1s;
+  box-shadow: 0 0 0 2em rgba(255, 255, 255, 0);
+}
+@-webkit-keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 #ef8f6e;
+  }
+}
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 #ef8f6e;
+  }
+}
+.table-container .row-buttons button {
+  color: #ef6eae;
+  transition: 0.25s;
+  background: none;
+  border: 2px solid;
+  line-height: 1;
+  margin: 0.5em;
+  padding: 1em 2em;
+}
+.table-container .row-buttons button:hover, .table-container .row-buttons button:focus {
+  border-color: #ef8f6e;
+  color: #e4cb58;
+}

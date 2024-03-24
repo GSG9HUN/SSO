@@ -1,0 +1,32 @@
+.sticky {
+    position: fixed;
+    top: 0;
+    width: 100%
+}
+
+.sticky {
+    padding-top: 1%;
+    z-index: 1;
+}
+
+.header-list  {
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    font-size: 3vh;
+    margin-left: 2vh;
+    margin-right: 4vh;
+    padding-left: 2vh;
+    padding-right: 2vh;
+    justify-content: space-between;
+}
+
+.header{
+    background: transparent;
+    width: 100%;
+}
+
+a{
+   border-bottom: none;
+}
