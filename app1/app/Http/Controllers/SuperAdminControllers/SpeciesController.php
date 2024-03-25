@@ -3,67 +3,58 @@
 namespace App\Http\Controllers\SuperAdminControllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Species;
+use App\Http\Requests\SuperAdminRequests\SpeciesRequest;
+use App\Interfaces\SuperAdminInterfaces\SpeciesRepositoryInterface;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 
 class SpeciesController extends Controller
 {
+    private SpeciesRepositoryInterface $speciesRepositoryInterface;
+
+    public function __construct(SpeciesRepositoryInterface $speciesRepositoryInterface)
+    {
+        $this->speciesRepositoryInterface = $speciesRepositoryInterface;
+    }
+
     public function index(): JsonResponse
     {
 
-        $result = Species::query()->with('category')->orderBy('id','desc')->paginate(10);
+        $result = $this->speciesRepositoryInterface->getAll();
 
         return response()->json(['species' => $result]);
     }
 
-
-    /**
-     * @throws ValidationException
-     */
-    public function store(Request $request): JsonResponse
+    public function store(SpeciesRequest $request): JsonResponse
     {
+        $saved = $this->speciesRepositoryInterface->create($request->all());
 
-        $this->validate($request, [
-            'speciesName' => 'required',
-            'category_id' => 'required'
-        ]);
+        if (!$saved) {
+            return response()->json(["Something went wrong!"], 504);
+        }
 
-        $newSpecie = new Species();
-        $newSpecie->name = $request['speciesName'];
-        $newSpecie->category_id = $request['category_id'];
-        $newSpecie->hair_type = $request['hair_type'] ?? null;
-
-        $newSpecie->save();
 
         return response()->json(['Success']);
     }
 
-
-    /**
-     * @throws ValidationException
-     */
-    public function update(Request $request, $id): JsonResponse
+    public function update(SpeciesRequest $request, $id): JsonResponse
     {
-        $this->validate($request, [
-            'speciesName' => 'required',
-            'category_id' => 'required'
-        ]);
+        $updated = $this->speciesRepositoryInterface->update($request->all(), $id);
 
-        Species::query()->where('id', $id)->update([
-            'name' => $request['speciesName'],
-            'category_id' => $request['category_id'],
-            'hair_type' => $request['hair_type'],
-        ]);
+        if (!$updated) {
+            return response()->json(["Something went wrong!"], 504);
+        }
+
 
         return response()->json(['Success']);
     }
 
     public function destroy($id): JsonResponse
     {
-        Species::query()->where('id', $id)->delete();
+        $deleted = $this->speciesRepositoryInterface->create($id);
 
+        if (!$deleted) {
+            return response()->json(["Something went wrong!"], 504);
+        }
         return response()->json(['Success']);
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Interfaces\SuperAdminInterfaces\InvitationRepositoryInterface;
+use App\Services\SuperAdminServices\InvitationService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -11,9 +13,8 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
-        //
     }
 
     /**

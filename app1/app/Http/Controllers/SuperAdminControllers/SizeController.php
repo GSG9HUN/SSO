@@ -3,58 +3,57 @@
 namespace App\Http\Controllers\SuperAdminControllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Size;
+use App\Http\Requests\SuperAdminRequests\SizeRequest;
+use App\Interfaces\SuperAdminInterfaces\SizeRepositoryInterface;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 
 class SizeController extends Controller
 {
-    public function index(): JsonResponse
-    {
-        $result = Size::query()->paginate(10);
+    private SizeRepositoryInterface $sizeRepositoryInterface;
 
-        return response()->json(['sizes'=>$result]);
+    public function __construct(SizeRepositoryInterface $sizeRepositoryInterface)
+    {
+        $this->sizeRepositoryInterface = $sizeRepositoryInterface;
     }
 
-
-    /**
-     * @throws ValidationException
-     */
-    public function store(Request $request): JsonResponse
+    public function index(): JsonResponse
     {
-        $this->validate($request,[
-            'size'=>'required'
-        ]);
+        $result = $this->sizeRepositoryInterface->getAll();
 
-        $newSize = new Size();
+        return response()->json(['sizes' => $result]);
+    }
 
-        $newSize->name = $request['size'];
-        $newSize->save();
+    public function store(SizeRequest $request): JsonResponse
+    {
+
+        $saved = $this->sizeRepositoryInterface->create($request->all());
+
+        if (!$saved) {
+            return response()->json(["Something went wrong!"], 504);
+        }
 
         return response()->json(['Success']);
     }
 
 
-    /**
-     * @throws ValidationException
-     */
-    public function update(Request $request, $id): JsonResponse
+    public function update(SizeRequest $request, $id): JsonResponse
     {
-        $this->validate($request,[
-            'size'=>'required'
-        ]);
+        $updated = $this->sizeRepositoryInterface->update($request->all(), $id);
 
-        Size::query()->where('id',$id)->update([
-            'size'=>$request['size']
-        ]);
+        if (!$updated) {
+            return response()->json(["Something went wrong!"], 504);
+        }
 
         return response()->json(['Success']);
     }
 
     public function destroy($id): JsonResponse
     {
-        Size::query()->where('id',$id)->delete();
+        $deleted = $this->sizeRepositoryInterface->create($id);
+
+        if (!$deleted) {
+            return response()->json(["Something went wrong!"], 504);
+        }
 
         return response()->json(['Success']);
     }

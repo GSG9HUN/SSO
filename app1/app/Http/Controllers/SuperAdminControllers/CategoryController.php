@@ -3,60 +3,54 @@
 namespace App\Http\Controllers\SuperAdminControllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SuperAdminRequests\CategoryRequest;
+use App\Interfaces\SuperAdminInterfaces\CategoryRepositoryInterface;
 use App\Models\Category;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 
 class CategoryController extends Controller
 {
+    private CategoryRepositoryInterface $categoryRepositoryInterface;
+
+    public function __construct(CategoryRepositoryInterface $categoryRepositoryInterface)
+    {
+        $this->categoryRepositoryInterface = $categoryRepositoryInterface;
+    }
     public function index(): JsonResponse
     {
-        $result = Category::query()->paginate(10);
+        $result = $this->categoryRepositoryInterface->getAll();
 
         return response()->json(['categories' => $result]);
     }
 
 
-    /**
-     * @throws ValidationException
-     */
-    public function store(Request $request): JsonResponse
+    public function store(CategoryRequest $request): JsonResponse
     {
-        $this->validate($request, [
-            'categoryName' => 'required',
-        ]);
-
-        $newCategory = new Category();
-
-        $newCategory->name = $request['categoryName'];
-        $newCategory->save();
-
+        $saved = $this->categoryRepositoryInterface->create($request->all());
+        if(!$saved){
+            return response()->json(["Something went wrong!"],504);
+        }
         return response()->json(['Success']);
 
     }
 
-
-    /**
-     * @throws ValidationException
-     */
-    public function update(Request $request, $id): JsonResponse
+    public function update(CategoryRequest $request, $id): JsonResponse
     {
-        $this->validate($request, [
-            'categoryName' => 'required',
-        ]);
 
-        Category::query()->where('id', $id)->update([
-            'name' => $request['categoryName']
-        ]);
+        $updated = $this->categoryRepositoryInterface->update($request->all(),$id);
 
+        if(!$updated){
+            return response()->json(["Something went wrong!"],504);
+        }
         return response()->json(['Success']);
     }
 
     public function destroy($id): JsonResponse
     {
-        Category::query()->where('id', $id)->delete();
-
+        $deleted = $this->categoryRepositoryInterface->delete($id);
+        if(!$deleted){
+            return response()->json(["Something went wrong!"],504);
+        }
         return response()->json(['Success']);
     }
 }

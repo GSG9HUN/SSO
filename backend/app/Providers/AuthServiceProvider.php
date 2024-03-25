@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Laravel\Passport\Passport;
+use App\Models\Passport as CustomPassportClient;
 
 
 class AuthServiceProvider extends ServiceProvider
@@ -27,5 +27,6 @@ class AuthServiceProvider extends ServiceProvider
         Passport::tokensExpireIn(now()->addDays());
         Passport::refreshTokensExpireIn(now()->addDays(30));
         Passport::personalAccessTokensExpireIn(now()->addMonths(6));
+        Passport::useClientModel(CustomPassportClient::class);
     }
 }

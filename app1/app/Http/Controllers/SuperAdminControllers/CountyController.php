@@ -3,57 +3,44 @@
 namespace App\Http\Controllers\SuperAdminControllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\County;
+use App\Http\Requests\SuperAdminRequests\CountryRequest;
+use App\Interfaces\SuperAdminInterfaces\CountyRepositoryInterface;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 
 class CountyController extends Controller
 {
+    private CountyRepositoryInterface $countryRepositoryInterface;
+
+    public function __construct(CountyRepositoryInterface $countryRepositoryInterface)
+    {
+        $this->countryRepositoryInterface = $countryRepositoryInterface;
+    }
 
     public function index(): JsonResponse
     {
-        $result= County::query()->paginate(10);
+        $result= $this->countryRepositoryInterface->getAll();
 
         return response()->json(['counties'=>$result]);
     }
 
-
-    public function create()
+    public function store(CountryRequest $request): JsonResponse
     {
+        $saved = $this->countryRepositoryInterface->create($request->all());
 
-    }
-
-    /**
-     * @throws ValidationException
-     */
-    public function store(Request $request): JsonResponse
-    {
-        $this->validate($request,[
-            'county'=>'required'
-        ]);
-
-        $newCounty = new County();
-
-        $newCounty->name = $request['county'];
-        $newCounty->save();
+        if(!$saved){
+            return response()->json(["Something went wrong!"],504);
+        }
 
         return response()->json(['Success']);
     }
 
-    /**
-     * @throws ValidationException
-     */
-    public function update(Request $request, int $id): JsonResponse
+    public function update(CountryRequest $request, int $id): JsonResponse
     {
+        $updated = $this->countryRepositoryInterface->update($request->all(),$id);
 
-        $this->validate($request,[
-            'county'=>'required'
-        ]);
-
-        County::query()->where('id',$id)->update([
-            'name'=>$request['county']
-        ]);
+        if(!$updated){
+            return response()->json(["Something went wrong!"],504);
+        }
 
         return response()->json(['Success']);
     }
@@ -61,7 +48,11 @@ class CountyController extends Controller
 
     public function destroy($id): JsonResponse
     {
-        County::query()->where('id',$id)->delete();
+        $deleted = $this->countryRepositoryInterface->delete($id);
+
+        if(!$deleted){
+            return response()->json(["Something went wrong!"],504);
+        }
 
         return response()->json(['Success']);
     }

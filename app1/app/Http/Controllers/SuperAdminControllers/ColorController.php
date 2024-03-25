@@ -3,59 +3,55 @@
 namespace App\Http\Controllers\SuperAdminControllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Color;
+use App\Http\Requests\SuperAdminRequests\ColorRequest;
+use App\Interfaces\SuperAdminInterfaces\ColorRepositoryInterface;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 
 class ColorController extends Controller
 {
+    private ColorRepositoryInterface $colorRepositoryInterface;
+
+    public function __construct(ColorRepositoryInterface $colorRepositoryInterface)
+    {
+        $this->colorRepositoryInterface = $colorRepositoryInterface;
+    }
     public function index(): JsonResponse
     {
-        $result = Color::query()->paginate(10);
+        $result = $this->colorRepositoryInterface->getAll();
 
         return response()->json(['colors' => $result]);
     }
 
-
-    /**
-     * @throws ValidationException
-     */
-    public function store(Request $request): JsonResponse
+    public function store(ColorRequest $request): JsonResponse
     {
-        $this->validate($request, [
-            'color' => 'required'
-        ]);
+        $saved = $this->colorRepositoryInterface->create($request->all());
 
-        $newColor = new Color();
-
-        $newColor->name = $request['color'];
-        $newColor->save();
-
+        if(!$saved){
+            return response()->json(["Something went wrong!"],504);
+        }
         return response()->json(['Success']);
+
     }
 
 
-    /**
-     * @throws ValidationException
-     */
-    public function update(Request $request, $id): JsonResponse
+
+    public function update(ColorRequest $request, $id): JsonResponse
     {
-        $this->validate($request, [
-            'color' => 'required'
-        ]);
+        $updated = $this->colorRepositoryInterface->update($request->all(),$id);
 
-        Color::query()->where('id', $id)->update([
-            'name' => $request['color']
-        ]);
-
+        if(!$updated){
+            return response()->json(["Something went wrong!"],504);
+        }
         return response()->json(['Success']);
     }
 
     public function destroy($id): JsonResponse
     {
-        Color::query()->where('id', $id)->delete();
+        $deleted = $this->colorRepositoryInterface->delete($id);
 
+        if(!$deleted){
+            return response()->json(["Something went wrong!"],504);
+        }
         return response()->json(['Success']);
     }
 }

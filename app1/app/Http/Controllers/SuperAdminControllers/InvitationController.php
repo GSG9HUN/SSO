@@ -3,40 +3,30 @@
 namespace App\Http\Controllers\SuperAdminControllers;
 
 use App\Http\Controllers\Controller;
-use App\Mail\RegistrationInvitationSend;
-use App\Models\Invitation;
+use App\Http\Requests\SuperAdminRequests\InvitationRequest;
+use App\Services\SuperAdminServices\InvitationService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Validation\ValidationException;
 
 class InvitationController extends Controller
 {
+    private InvitationService $invitationService;
+    public function __construct(InvitationService $invitationService)
+    {
+        $this->invitationService = $invitationService;
+    }
+
     function index(): JsonResponse
     {
-        $result = Invitation::query()->orderBy('id','desc')->paginate(10);
+        $result = $this->invitationService->getAll();
         return response()->json(['invitations' => $result]);
     }
 
-    /**
-     * @throws ValidationException
-     */
-    function store(Request $request): JsonResponse
+    function store(InvitationRequest $request): JsonResponse
     {
-
-        $this->validate($request,
-            ['email' => 'required']
-        );
-
-        $invitation = new Invitation();
-        $invitation->email = $request['email'];
-        $invitation->generateInvitationToken();
-        $saved = $invitation->save();
-
-        Mail::to($invitation->email)->send(new RegistrationInvitationSend($invitation->invitation_token));
+        $saved = $this->invitationService->createNewInvitation($request->all());
 
         if ($saved) {
-            return response()->json([$invitation]);
+            return response()->json(["The invitation sent"]);
         } else {
             return response()->json(['error']);
         }
@@ -44,8 +34,13 @@ class InvitationController extends Controller
 
     }
 
-    function destroy(Request $request)
+    function destroy(int $id)
     {
+        $deleted = $this->invitationService->delete($id);
 
+        if(!$deleted){
+            return response()->json(["Something went wrong!"]);
+        }
+        return response()->json(["Success"]);
     }
 }

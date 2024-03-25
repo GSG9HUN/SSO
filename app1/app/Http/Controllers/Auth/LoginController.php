@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Roles;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
@@ -21,7 +24,9 @@ class LoginController extends Controller
     |
     */
 
-    use AuthenticatesUsers;
+    use AuthenticatesUsers {
+        AuthenticatesUsers::logout as protected parentLogout;
+    }
 
 
     public function redirectTo(): string
@@ -41,5 +46,17 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
+    }
+
+    public function login(Request $request): void
+    {
+        abort(404);
+    }
+
+    public function logout(Request $request): JsonResponse|RedirectResponse
+    {
+        Auth::user()->logoutFromSSOServer();
+        return $this->parentLogout($request);
+
     }
 }

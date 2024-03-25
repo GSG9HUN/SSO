@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\SSOController;
 
+use App\Http\Controllers\TestControllers\GeoLocationController;
+use App\Http\Middleware\HasInvitation;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -11,6 +13,10 @@ Route::get('/', function () {
 Route::get("/sso/login", [SSOController::class,"login"])->name("sso.login");
 
 Route::get("/callback", [SSOController::class,"callback"])->name("sso.callback");
+
+Route::get("/sso/user",[SSOController::class,"connectUser"])->name("sso.user");
+
+Auth::routes(["register"=>false,"reset"=>false,]);
 
 Route::get('/', function () {
     return view('view_blades.welcome');
@@ -29,33 +35,6 @@ Route::get('/animals', function () {
 Route::get('/shelters', function () {
     return view('view_blades.shelters');
 })->name('guest.shelters');
-
-Auth::routes([
-    'verify' => true,
-    'reset' => false,
-    'register' => false,
-]);
-
-Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])
-    ->name('password.request');
-
-Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])
-    ->name('password.reset');
-
-Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])
-    ->name('password.email');
-
-Route::post('password/reset', [ResetPasswordController::class, 'reset'])
-    ->name('password.update');
-
-
-Route::get('/register', [RegisterController::class, 'showRegistrationForm'])
-    ->middleware(HasInvitation::class)
-    ->name('registerShow');
-
-Route::post('/register', [RegisterController::class, 'create'])
-    ->name('registerCreate');
-
 
 Route::prefix('/super_admin_dashboard')
     ->middleware(['auth', 'verified','role:3'])
@@ -112,4 +91,4 @@ Route::prefix('/admin_dashboard')->middleware(['auth','verified','role:2'])->gro
 });
 
 
-Route::get('/ip',[\App\Http\Controllers\TestControllers\GeoLocationController::class,'index']);
+Route::get('/ip',[GeoLocationController::class,'index']);

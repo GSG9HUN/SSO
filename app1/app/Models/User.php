@@ -8,6 +8,9 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Http;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -27,7 +30,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'first_name',
         'last_name',
         'email',
-        'password',
         'role_id'
     ];
 
@@ -38,7 +40,6 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array
      */
     protected $hidden = [
-        'password',
         'remember_token',
     ];
 
@@ -75,5 +76,17 @@ class User extends Authenticatable implements MustVerifyEmail
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new ResetPasswordEmail($token));
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public function logoutFromSSOServer(){
+        $access_token = session()->get("access_token");
+        $response = Http::withHeaders([
+            "Accept"=>"application/json",
+            "Authorization"=>"Bearer ".$access_token
+        ])->get(config("auth.sso_host")."/api/logout");
     }
 }

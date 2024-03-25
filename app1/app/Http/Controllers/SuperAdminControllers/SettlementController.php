@@ -3,67 +3,58 @@
 namespace App\Http\Controllers\SuperAdminControllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Settlement;
+use App\Http\Requests\SuperAdminRequests\SettlementRequest;
+use App\Interfaces\SuperAdminInterfaces\SettlementRepositoryInterface;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 
 class SettlementController extends Controller
 {
+    private SettlementRepositoryInterface $settlementRepositoryInterface;
+    public function __construct(SettlementRepositoryInterface $settlementRepositoryInterface)
+    {
+        $this->settlementRepositoryInterface = $settlementRepositoryInterface;
+    }
+
     public function index(): JsonResponse
     {
-        $result = Settlement::query()->with('county')->paginate(10);
+        $result = $this->settlementRepositoryInterface->getAll();
 
         return response()->json(['settlement'=>$result]);
     }
 
-    public function create()
+    public function store(SettlementRequest $request): JsonResponse
     {
 
-    }
+        $saved = $this->settlementRepositoryInterface->create($request->all());
 
-    /**
-     * @throws ValidationException
-     */
-    public function store(Request $request): JsonResponse
-    {
-        $this->validate($request,[
-            'countyId'=>'required',
-            'settlementName'=>'required'
-        ]);
-
-        $newSettlement = new Settlement();
-
-        $newSettlement->name = $request['settlementName'];
-        $newSettlement->county_id = $request['countyId'];
-
-        $newSettlement->save();
+        if(!$saved){
+            return response()->json(["Something went wrong!"],504);
+        }
 
         return response()->json(['Success']);
     }
 
 
-    /**
-     * @throws ValidationException
-     */
-    public function update(Request $request, $id): JsonResponse
+    public function update(SettlementRequest $request, $id): JsonResponse
     {
 
-        $this->validate($request,[
-            'countyId'=>'required',
-            'settlementName'=>'required'
-        ]);
+        $updated = $this->settlementRepositoryInterface->update($request->all(),$id);
 
-        Settlement::query()->where('id',$id)->update([
-            'name'=>$request['settlementName'],
-            'county_id'=>$request['countyId'],
-        ]);
+        if(!$updated){
+            return response()->json(["Something went wrong!"],504);
+        }
 
         return response()->json(['Success']);
     }
 
-    public function destroy($id)
+    public function destroy($id): JsonResponse
     {
-        Settlement::query()->where('id',$id)->delete();
+        $deleted = $this->settlementRepositoryInterface->delete($id);
+
+        if(!$deleted){
+            return response()->json(["Something went wrong!"],504);
+        }
+
+        return response()->json(['Success']);
     }
 }

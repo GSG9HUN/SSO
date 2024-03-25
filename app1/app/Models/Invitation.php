@@ -21,7 +21,8 @@ class Invitation extends Model
 
     protected $primaryKey = 'id';
 
-    public function generateInvitationToken() {
+    public function generateInvitationToken(): void
+    {
         $this->invitation_token = substr(md5(rand(0, 9) . $this->email . time()), 0, 32);
     }
 }
