@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 
 class LoginController extends Controller
 {
@@ -24,9 +25,7 @@ class LoginController extends Controller
     |
     */
 
-    use AuthenticatesUsers {
-        AuthenticatesUsers::logout as protected parentLogout;
-    }
+    use AuthenticatesUsers;
 
 
     public function redirectTo(): string
@@ -55,8 +54,19 @@ class LoginController extends Controller
 
     public function logout(Request $request): JsonResponse|RedirectResponse
     {
-        Auth::user()->logoutFromSSOServer();
-        return $this->parentLogout($request);
+        Auth::user()->logoutFromSSOServer($request->session()->get("access_token"));
+        Auth::logout();
+        $this->guard()->logout();
 
+        $request->session()->invalidate();
+
+        $request->session()->regenerateToken();
+
+         if($response = $this->loggedOut($request)){
+             return $response;
+         }
+        return $request->wantsJson()
+            ? new JsonResponse([], 204)
+            : redirect('/');
     }
 }

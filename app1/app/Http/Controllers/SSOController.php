@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Repositories\UserRepository;
+use App\Interfaces\UserRepositoryInterface;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -11,40 +11,37 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Http;
 use http\Exception\InvalidArgumentException as InvalidArgumentExceptionAlias;
-use JetBrains\PhpStorm\NoReturn;
-use Throwable;
-use Workbench\App\Models\User;
 
 class SSOController extends Controller
 {
-    private UserRepository $userRepository;
+    private UserRepositoryInterface $userRepositoryInterface;
 
-    public function __construct(UserRepository $userRepository)
+    public function __construct(UserRepositoryInterface $userRepositoryInterface)
     {
-        $this->userRepository = $userRepository;
+        $this->userRepositoryInterface = $userRepositoryInterface;
     }
     public function login(Request $request): \Illuminate\Foundation\Application|Redirector|Application|RedirectResponse
     {
         $request->session()->put("state",$state=Str::random(40));
         $query = http_build_query([
-            "client_id" =>"9ba454c0-75be-4ab4-a404-85d12e71e263",
-            "redirect_uri" =>"http://127.0.0.1:8001/callback",
+            "client_id" =>config("auth.client_id"),
+            "redirect_uri" =>config("auth.callback"),
             "response_type"=>"code",
             "scope"=>"",
             "state"=>$state
         ]);
-        return redirect("http://127.0.0.1:8000/oauth/authorize?".$query);
+        return redirect(config("auth.sso_host")."/oauth/authorize?".$query);
     }
 
-    public function callback(Request $request)
+    public function callback(Request $request): \Illuminate\Foundation\Application|Redirector|Application|RedirectResponse
     {
         $state = $request->session()->pull("state");
-        throw_unless(strlen($state) >0 && $state == $request->state, InvalidArgumentExceptionAlias::class);
-        $response = Http::asForm()->post("http://127.0.0.1:8000/oauth/token",[
+        throw_unless(strlen($state) >0 && $state === $request->state, InvalidArgumentExceptionAlias::class);
+        $response = Http::asForm()->post(config("auth.sso_host")."/oauth/token",[
             "grant_type"=>"authorization_code",
-            "client_id"=>"9ba454c0-75be-4ab4-a404-85d12e71e263",
-            "client_secret" =>"4vnt8yJsKtCcdA01GsdiubnGRc7u1GlXoSdiwNi8",
-            "redirect_uri"=>"http://127.0.0.1:8001/callback",
+            "client_id"=>config("auth.client_id"),
+            "client_secret" =>config("auth.client_secret"),
+            "redirect_uri"=>config("auth.callback"),
             "code" => $request->code
         ]);
         $request->session()->put($response->json());
@@ -52,21 +49,22 @@ class SSOController extends Controller
     }
 
 
-    public function connectUser(Request $request){
+    public function connectUser(Request $request): \Illuminate\Foundation\Application|Redirector|Application|RedirectResponse
+    {
         $access_token = $request->session()->get("access_token");
         $response = Http::withHeaders([
             "Accept"=>"application/json",
             "Authorization"=>"Bearer ".$access_token
-        ])->get("http://127.0.0.1:8000/api/user");
+        ])->get(config("auth.sso_host")."/api/user");
         $userArray =  $response->json();
         try {
             $email = $userArray["email"];
         }catch (\Throwable $th){
             return redirect("login")->withError("Failed to get login information! Try again");
         }
-        $user = $this->userRepository->getByEmail($email);
+        $user = $this->userRepositoryInterface->getByEmail($email);
         if(!$user){
-            $success =$this->userRepository->create($userArray);
+            $success =$this->userRepositoryInterface->create($userArray);
             if(!$success){
                 abort(404,"Something went wrong");
             }
@@ -74,5 +72,4 @@ class SSOController extends Controller
         Auth::login($user);
         return redirect(route("super_admin_dashboard"));
     }
-
 }

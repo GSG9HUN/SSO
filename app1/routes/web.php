@@ -3,9 +3,8 @@
 use App\Http\Controllers\SSOController;
 
 use App\Http\Controllers\TestControllers\GeoLocationController;
-use App\Http\Middleware\HasInvitation;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-
 Route::get('/', function () {
     return view('welcome');
 });

@@ -4,13 +4,13 @@ namespace App\Models;
 
 use App\Notifications\ResetPasswordEmail;
 use App\Notifications\VerificationEmail;
+use GuzzleHttp\Promise\PromiseInterface;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Http\Client\Response;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Http;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -22,9 +22,9 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var string[]
      */
 
-    private const USER= 1;
-    private const ADMIN= 2;
-    private const SUPER_ADMIN= 3;
+    private const USER = 1;
+    private const ADMIN = 2;
+    private const SUPER_ADMIN = 3;
 
     protected $fillable = [
         'first_name',
@@ -33,7 +33,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'role_id'
     ];
 
-    protected $table ='users';
+    protected $table = 'users';
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -68,25 +68,19 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->role_id === self::SUPER_ADMIN;
     }
 
-    public function sendEmailVerificationNotification()
+    public function sendEmailVerificationNotification(): void
     {
         $this->notify(new VerificationEmail());
     }
 
-    public function sendPasswordResetNotification($token)
+    public function sendPasswordResetNotification($token): void
     {
         $this->notify(new ResetPasswordEmail($token));
     }
 
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     */
-    public function logoutFromSSOServer(){
-        $access_token = session()->get("access_token");
-        $response = Http::withHeaders([
-            "Accept"=>"application/json",
-            "Authorization"=>"Bearer ".$access_token
-        ])->get(config("auth.sso_host")."/api/logout");
+    public function logoutFromSSOServer($accessToken): PromiseInterface|string|Response
+    {
+        $test = Http::withToken($accessToken)->get(config("auth.sso_host") . "/api/logout");
+        return $test;
     }
 }

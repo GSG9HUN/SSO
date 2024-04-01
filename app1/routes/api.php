@@ -9,8 +9,10 @@ use App\Http\Controllers\SuperAdminControllers\ColorController;
 use App\Http\Controllers\SuperAdminControllers\InvitationController;
 use App\Http\Controllers\SuperAdminControllers\SizeController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Route;
-
+use Illuminate\Support\Facades\Session;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -39,4 +41,3 @@ Route::middleware('auth')->group(function(){
     Route::get('/SelectSearch/county',[SelectSearchController::class,'getCountyOptions']);
     Route::get('/SelectSearch/category',[SelectSearchController::class,'getAnimalCategoryOptions']);
 });
-

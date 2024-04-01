@@ -14,14 +14,12 @@ class Role
      *
      * @param Request $request
      * @param Closure $next
+     * @param String $role
      * @return mixed
      */
 
     public function handle(Request $request, Closure $next, String $role): mixed
     {
-
-        Log::info(Auth::user()->role_id);
-
         if(Auth::user()->role_id == $role)
             return $next($request);
 

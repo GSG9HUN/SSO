@@ -6,9 +6,11 @@ use Laravel\Passport\Client;
 
 class Passport extends Client
 {
-    public function skipsAuthorization(): false
+    public function skipsAuthorization(): bool
     {
-        return false;
+        // I have to skip this only if the client is mine...
+        // Have to think about it later...
+        return true;
     }
 
 }

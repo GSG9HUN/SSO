@@ -18,9 +18,7 @@ class HasInvitation
      */
     public function handle(Request $request, Closure $next)
     {
-
         if ($request->isMethod('get')) {
-
 
             if (!$request->has('invitationToken')) {
                 return redirect(route('requestInvitation'));
@@ -42,7 +40,6 @@ class HasInvitation
             }
             $request->merge(array('email' => $invitation->email));
         }
-
         return $next($request);
     }
 }

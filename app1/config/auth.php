@@ -108,5 +108,8 @@ return [
 
     'password_timeout' => 10800,
 
-    'sso_host'=>"http://127.0.0.1:8000"
+    'client_id'=>env("CLIENT_ID"),
+    'client_secret'=>env("CLIENT_SECRET"),
+    'sso_host'=>env("SSO_HOST"),
+    'callback'=>env("SSO_CLIENT_CALLBACK")
 ];

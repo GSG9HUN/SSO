@@ -5,7 +5,6 @@ namespace App\Http\Controllers\SuperAdminControllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SuperAdminRequests\CategoryRequest;
 use App\Interfaces\SuperAdminInterfaces\CategoryRepositoryInterface;
-use App\Models\Category;
 use Illuminate\Http\JsonResponse;
 
 class CategoryController extends Controller
