@@ -4,7 +4,13 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -68,5 +74,31 @@ class RegisterController extends Controller
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
+    }
+
+    protected function register(Request $request)
+    {
+        dd("itt");
+        dd($request->session()->get('email'));
+        $this->validator($request->all())->validate();
+
+
+
+        return $request->wantsJson()
+            ? new JsonResponse([], 201)
+            : redirect($this->redirectPath());
+    }
+
+    public function showRegistrationForm(Request $request): View|Application|Factory|\Illuminate\Contracts\Foundation\Application
+    {
+        if($request->get('encoding')==='Base64'){
+            $email = unserialize(base64_decode($request->get('details')))['email'];
+        }
+
+        $request->session()->put("email",$email);
+        $request->session()->put("registrationToken",$request->get('invitationToken'));
+        $request->session()->put("clientURL",$request->get("client"));
+
+        return view('auth.register')->with(['registrationEmail'=>$email]);
     }
 }

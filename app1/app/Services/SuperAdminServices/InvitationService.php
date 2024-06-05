@@ -26,7 +26,7 @@ class InvitationService
     {
         $saved = $this->invitationRepository->create($data);
         if(!$saved){
-            return false;
+           abort(500);
         }
         $invitation = $this->invitationRepository->findByEmail($data["email"]);
         $this->sendMail($invitation);
@@ -46,7 +46,13 @@ class InvitationService
 
     public function sendMail(Invitation $invitation): void
     {
-        Mail::to($invitation->email)->send(new RegistrationInvitationSend($invitation->invitation_token));
+        Mail::to($invitation->email)->send(new RegistrationInvitationSend($invitation->invitation_token,$invitation->role_id,$invitation->email));
+    }
+
+    public function tokenExistAndValid(string $email,string $token):bool{
+        $invitation = $this->invitationRepository->findByEmailAndToken($email,$token);
+
+        return (bool)$invitation;
     }
 
 }

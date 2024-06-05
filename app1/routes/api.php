@@ -8,11 +8,9 @@ use App\Http\Controllers\SuperAdminControllers\CategoryController;
 use App\Http\Controllers\SuperAdminControllers\ColorController;
 use App\Http\Controllers\SuperAdminControllers\InvitationController;
 use App\Http\Controllers\SuperAdminControllers\SizeController;
+use App\Http\Controllers\TokenValidationController;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Session;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -27,7 +25,7 @@ use Illuminate\Support\Facades\Session;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::middleware('auth')->group(function(){
+Route::middleware('myAuth')->group(function(){
     Route::resource('/invitations',InvitationController::class);
     Route::resource('/counties', CountyController::class);
     Route::resource('/category', CategoryController::class);
@@ -41,3 +39,6 @@ Route::middleware('auth')->group(function(){
     Route::get('/SelectSearch/county',[SelectSearchController::class,'getCountyOptions']);
     Route::get('/SelectSearch/category',[SelectSearchController::class,'getAnimalCategoryOptions']);
 });
+
+
+Route::post('validateToken',[TokenValidationController::class,'invitationTokenExist'])->middleware('onlyFromSSO');

@@ -14,7 +14,8 @@ class GeoLocationController extends Controller
     public function index(Request $request){
         $ip = $request->ip();
         $data = Location::get($ip);
-        $this->store($data);
+        return [$data,$ip];
+        //$this->store($data);
     }
 
 

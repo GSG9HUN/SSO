@@ -5,6 +5,7 @@ export default class AddInvitation extends React.Component {
         super(props);
         this.state = {
             email: '',
+            role_id:'2',
             errors: ''
         }
 
@@ -20,11 +21,10 @@ export default class AddInvitation extends React.Component {
 
     handleSubmit(e) {
         e.preventDefault()
-        console.log(e)
         axios.post('/api/invitations', {
-            email: this.state.email
+            email: this.state.email,
+            role_id:this.state.role_id
         }).then((response) => {
-            console.log(response.data)
             this.closeBut.click()
         }).catch((err) => {
             console.log(err)

@@ -1,12 +1,10 @@
 <?php
 
-namespace App\Http\Requests\SuperAdminRequests;
+namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 
-class CountryRequest extends FormRequest
+class ValidateTokenRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -19,12 +17,13 @@ class CountryRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, ValidationRule|array|string>
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
-            "county"=>"required"
+            'email'=>'required',
+            'registrationToken'=>'required'
         ];
     }
 }

@@ -12,7 +12,7 @@ class InvitationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,7 +23,8 @@ class InvitationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "email"=>"required|unique"
+            "email"=>"required|unique:invitations",
+            "role_id"=>"required|exists:roles,id",
         ];
     }
 }

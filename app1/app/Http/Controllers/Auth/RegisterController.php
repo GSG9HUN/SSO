@@ -63,14 +63,6 @@ class RegisterController extends Controller
 
     protected function create(Request $request): string
     {
-        $token = $request['invitationToken'];
-
-        Invitation::query()->where('invitation_token', $token)
-            ->where('email',$request['email'])
-            ->update([
-                'registered_at'=>Carbon::now()
-            ]);
-
         User::create([
             'first_name' => $request['first_name'],
             'last_name' => $request['last_name'],

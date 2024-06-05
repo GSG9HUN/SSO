@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
             ColorSeeder::class,
             CategorySeeder::class,
             SpeciesSeeder::class,
-            UserSeeder::class,
+            //UserSeeder::class,
             CountySeeder::class,
             SettlementSeeder::class
         ]);

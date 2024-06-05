@@ -5,6 +5,8 @@ use App\Http\Controllers\SSOController;
 use App\Http\Controllers\TestControllers\GeoLocationController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\View;
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -36,7 +38,7 @@ Route::get('/shelters', function () {
 })->name('guest.shelters');
 
 Route::prefix('/super_admin_dashboard')
-    ->middleware(['auth', 'verified','role:3'])
+    ->middleware(['auth', 'verified','role:3','shareTokens'])
     ->group(function () {
 
         Route::get('/', function (){
@@ -83,7 +85,7 @@ Route::prefix('/super_admin_dashboard')
         });
     });
 
-Route::prefix('/admin_dashboard')->middleware(['auth','verified','role:2'])->group(function (){
+Route::prefix('/admin_dashboard')->middleware(['auth','verified','role:3'])->group(function (){
     Route::get('/', function (){
         return view('admin_views.welcome');
     })->name('statistics');

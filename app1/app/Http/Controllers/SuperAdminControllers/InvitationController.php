@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 class InvitationController extends Controller
 {
     private InvitationService $invitationService;
+
     public function __construct(InvitationService $invitationService)
     {
         $this->invitationService = $invitationService;
@@ -34,11 +35,11 @@ class InvitationController extends Controller
 
     }
 
-    function destroy(int $id)
+    function destroy(int $id): JsonResponse
     {
         $deleted = $this->invitationService->delete($id);
 
-        if(!$deleted){
+        if (!$deleted) {
             return response()->json(["Something went wrong!"]);
         }
         return response()->json(["Success"]);

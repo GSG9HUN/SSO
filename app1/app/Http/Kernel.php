@@ -3,11 +3,15 @@
 namespace App\Http;
 
 use App\Http\Middleware\Authenticate;
+use App\Http\Middleware\CustomJWTAuthMiddleware;
 use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\HasInvitation;
+use App\Http\Middleware\OnlyFromSSO;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\Role;
+use App\Http\Middleware\ShareTokenMiddleware;
+use App\Http\Middleware\ShareTokensMiddleware;
 use App\Http\Middleware\TrimStrings;
 use App\Http\Middleware\TrustProxies;
 use App\Http\Middleware\VerifyCsrfToken;
@@ -25,8 +29,6 @@ use Illuminate\Routing\Middleware\ThrottleRequests;
 use Illuminate\Routing\Middleware\ValidateSignature;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Laravel\Passport\Http\Middleware\CreateFreshApiToken;
-
 class Kernel extends HttpKernel
 {
     /**
@@ -62,7 +64,7 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
-            // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+             //EnsureFrontendRequestsAreStateful::class,
             'throttle:api',
             SubstituteBindings::class,
         ],
@@ -87,5 +89,8 @@ class Kernel extends HttpKernel
         'throttle' => ThrottleRequests::class,
         'verified' => EnsureEmailIsVerified::class,
         'role'=> Role::class,
+        'onlyFromSSO'=>OnlyFromSSO::class,
+        'shareTokens' => ShareTokenMiddleware::class,
+        'myAuth'=>CustomJWTAuthMiddleware::class
     ];
 }

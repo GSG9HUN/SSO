@@ -30,7 +30,6 @@ class LogoutApiController extends Controller
                 $this->refreshTokenRepository->revokeRefreshTokensByAccessTokenId($token->id);
             });
             $this->sessionsRepository->deleteByUserIdAndId($user->id, session()->getId());
-            //Log::info($request->session());
             DB::commit();
         } catch (\Exception $e) {
             Log::error($e->getMessage());

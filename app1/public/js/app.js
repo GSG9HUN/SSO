@@ -10652,6 +10652,7 @@ var AddInvitation = /*#__PURE__*/function (_React$Component) {
     _this = _callSuper(this, AddInvitation, [props]);
     _this.state = {
       email: '',
+      role_id: '2',
       errors: ''
     };
     _this.handleChange = _this.handleChange.bind(_this);
@@ -10669,11 +10670,10 @@ var AddInvitation = /*#__PURE__*/function (_React$Component) {
     value: function handleSubmit(e) {
       var _this2 = this;
       e.preventDefault();
-      console.log(e);
       axios.post('/api/invitations', {
-        email: this.state.email
+        email: this.state.email,
+        role_id: this.state.role_id
       }).then(function (response) {
-        console.log(response.data);
         _this2.closeBut.click();
       })["catch"](function (err) {
         console.log(err);
@@ -11186,7 +11186,7 @@ try {
 
 window.axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-
+window.axios.defaults.headers.common['Authorization'] = "Bearer ".concat(localStorage.getItem('accessToken'));
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
  * for events that are broadcast by Laravel. Echo and event broadcasting

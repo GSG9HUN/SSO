@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @property mixed $email
  * @property string $invitation_token
+ * @property string $role_id
  */
 class Invitation extends Model
 {
@@ -16,7 +17,7 @@ class Invitation extends Model
     protected $table = 'invitations';
 
     protected $fillable = [
-        'email','invitation_token','registered_at'
+        'email','invitation_token','role_id','registered_at'
     ];
 
     protected $primaryKey = 'id';

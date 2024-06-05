@@ -9,11 +9,11 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "ext-http": "*",
         "laravel/framework": "^11.0",
         "laravel/tinker": "^2.9",
         "laravel/ui": "^4.5",
-        "stevebauman/location": "*",
-        "ext-http": "*"
+        "stevebauman/location": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
