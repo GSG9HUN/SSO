@@ -12,6 +12,9 @@ use Illuminate\Http\Client\Response;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Http;
 
+/**
+ * @property $role_id
+ */
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable;
@@ -78,9 +81,8 @@ class User extends Authenticatable implements MustVerifyEmail
         $this->notify(new ResetPasswordEmail($token));
     }
 
-    public function logoutFromSSOServer($accessToken): PromiseInterface|string|Response
+    public function logoutFromSSOServer($accessToken): void
     {
-        $test = Http::withToken($accessToken)->get(config("auth.sso_host") . "/api/logout");
-        return $test;
+        Http::withToken($accessToken)->get(config("auth.sso_host") . "/api/logout");
     }
 }

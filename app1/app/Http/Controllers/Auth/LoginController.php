@@ -11,6 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Log;
 
 class LoginController extends Controller
 {
@@ -55,7 +56,7 @@ class LoginController extends Controller
     public function logout(Request $request): JsonResponse|RedirectResponse
     {
         Auth::user()->logoutFromSSOServer($request->session()->get("access_token"));
-        Auth::logout();
+        Auth::logoutCurrentDevice();
         $this->guard()->logout();
 
         $request->session()->invalidate();

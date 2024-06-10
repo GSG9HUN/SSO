@@ -25,7 +25,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::middleware('myAuth')->group(function(){
+Route::middleware(['myAuth'])->group(function(){
     Route::resource('/invitations',InvitationController::class);
     Route::resource('/counties', CountyController::class);
     Route::resource('/category', CategoryController::class);

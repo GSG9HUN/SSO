@@ -7,15 +7,20 @@ use Firebase\JWT\Key;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Laravel\Passport\ClientRepository;
 use Laravel\Passport\TokenRepository;
 
 class JWTTokenValidationController extends Controller
 {
-    protected $tokenRepository;
+    protected TokenRepository $tokenRepository;
+    protected ClientRepository $clientRepository;
 
-    public function __construct(TokenRepository $tokenRepository)
+    public function __construct(TokenRepository $tokenRepository,ClientRepository $clientRepository)
     {
         $this->tokenRepository = $tokenRepository;
+        $this->clientRepository = $clientRepository;
     }
 
     public function validateToken(Request $request): JsonResponse
@@ -32,8 +37,12 @@ class JWTTokenValidationController extends Controller
 
         $token = $this->tokenRepository->find($tokenId);
 
-        if (!$token || $token->revoked) {
-            return response()->json(['error' => 'Invalid token'], 401);
+        if (!$token) {
+            return response()->json(['error' => 'Invalid token'], 400);
+        }
+
+        if($token->revoked){
+            return response()->json(['error' => 'Revoked token'], 402);
         }
 
         return response()->json(["active"=>!$token->revoked]);

@@ -50,7 +50,6 @@ class SSOController extends Controller
             return redirect('login')->withErrors('Failed to get access token from SSO server.');
         }
 
-        //$request->session()->put($response->json());
         $tokenData = $response->json();
         $request->session()->put('access_token', $tokenData['access_token']);
         $request->session()->put('refresh_token', $tokenData['refresh_token']);
@@ -93,7 +92,7 @@ class SSOController extends Controller
             }
         }
         $user = $this->userRepositoryInterface->getByEmail($email);
-        Auth::login($user);
+        Auth::loginUsingId($user->id);
         return redirect(route("super_admin_dashboard"));
     }
 

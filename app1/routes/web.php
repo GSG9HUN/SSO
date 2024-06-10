@@ -5,7 +5,6 @@ use App\Http\Controllers\SSOController;
 use App\Http\Controllers\TestControllers\GeoLocationController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\View;
 
 Route::get('/', function () {
     return view('welcome');
